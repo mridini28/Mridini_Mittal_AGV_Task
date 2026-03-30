@@ -20,3 +20,33 @@ Smooth and consistent- clear path- global min
 Vector points outward, grows rapidly- indicate obstacle- local max
 
 Risk field: Urisk- distance to lane boundaries and obstacles is used to compute total risk
+
+# implementation
+The simulation environment that is uploaded (simulation_setup.py) already builds the road, obstacles,
+and car, so we only need the navigation script.
+From the paper:
+Optical flow shows how pixels move between frames.
+If the car moves forward, flow vectors spread outward.
+The point where they originate is the Focus of Expansion (FOE).
+Obstacles disturb this pattern.
+1. Capture camera images from PyBullet
+2. Convert to grayscale and detect feature points
+3. Use Lucas-Kanade to track motion
+4. Large motion indicates obstacles
+5. Steer opposite to obstacle side
+Flow vectors increase near an obstacle.
+If more motion on LEFT - obstacle on left -go RIGHT
+If more motion on RIGHT -obstacle on right -go LEFT
+Else -go straight
+We use Lucas-Kanade optical flow to track feature movement between frames.
+Large motion indicates nearby obstacles.
+We divide the image into left and right halves.
+If motion is higher on one side, we steer in the opposite direction.
+This acts like a simplified potential field.
+What you will see: Car moves forward, Detects obstacles, Zig-zags to avoid them, Reaches
+end wall.
+
+flow = new_pts - old_pts
+each point has:(dx, dy)
+dx -movement in x direction (left/right)
+dy -movement in y direction (up/down)
