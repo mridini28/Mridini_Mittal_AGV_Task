@@ -1,4 +1,4 @@
-# Mridini_Mittal_AGV_Task
+# Optical Flow
 '''Monocular Images- images as seen by a single camera- 2D
 (Force in robotics is the control command.)
 Visual Potential Field: 2D map calculated from a camera image where low values are assigned to where the car should go (road), and high values are assigned to where the car should avoid (obstacles).
