@@ -29,30 +29,29 @@ out= cv2.VideoWriter( #output video with same dimentsions
 )
 
 frame_count= 0
-max_frames= 300
+max_frames= 600
 
-while frame_count < max_frames:
+while frame_count < max_frames: #runs for unpto 600 frames
 
-    ret, frame2= cap.read()
-    if not ret:
+    ret, frame2= cap.read() #reads next frame from video
+    if not ret: #if no more frames sstop loop
         break
 
     frame_count +=1
     print("Frame:", frame_count)
 
-    gray2= cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+    gray2= cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY) #grayscale
 
-    next_corners =[]
+    next_corners =[] #empty list to collect where points moved too
 
-    #increase visibility
+    #increase visibility, makes arrow bigger nad more visible
     scale= 15
 
-    for corner in corners:
+    for corner in corners: #loops through every tracked feature point
 
-        x, y = int(corner[0]), int(corner[1])
+        x, y = int(corner[0]), int(corner[1]) #x and y cordinated of this corner point
 
-        # small window LK (simplified)
-        win= 15
+        win= 15 #window size- 15, 15 border aeound each point, so actual patch is 30 cross 30
         if (x-win< 0 or y-win< 0 or
             x+win>= gray1.shape[1] or y+win>= gray1.shape[0]):
             continue
