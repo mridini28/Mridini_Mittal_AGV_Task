@@ -51,37 +51,45 @@ while frame_count < max_frames: #runs for unpto 600 frames
 
         x, y = int(corner[0]), int(corner[1]) #x and y cordinated of this corner point
 
-        win= 15 #window size- 15, 15 border aeound each point, so actual patch is 30 cross 30
+        win= 15 #window size- 15, 15 direction each side of the pint, so actual patch is 30 cross 30
         if (x-win< 0 or y-win< 0 or
             x+win>= gray1.shape[1] or y+win>= gray1.shape[0]):
-            continue
+            continue #if a point is near the edge the window would go out of the picture frame so skip thta point
 
-        patch1= gray1[y-win:y+win, x-win:x+win]
+        patch1= gray1[y-win:y+win, x-win:x+win] #patched extracted arounf a point
         patch2= gray2[y-win:y+win, x-win:x+win]
 
-        flow= cv2.calcOpticalFlowFarneback(
-            patch1, patch2, None,
-            0.5, 1, 15, 2, 5, 1.1, 0
-        )
+        Ix = cv2.Sobel(patch1, cv2.CV_64F, 1, 0, ksize=3) #Sobel detects how brightness changes across the patch
+        Iy = cv2.Sobel(patch1, cv2.CV_64F, 0, 1, ksize=3)
+        It = patch2 - patch1
 
-        dx= np.mean(flow[..., 0])
-        dy= np.mean(flow[..., 1])
+        A   = np.column_stack([Ix.flatten(), Iy.flatten()])
+        b   = -It.flatten()
+        ATA = A.T @ A
+        ATb = A.T @ b
+
+        if abs(np.linalg.det(ATA)) < 1e-10:
+            continue
+
+        flow   = np.linalg.solve(ATA, ATb) 
+        dx, dy = flow[0], flow[1]            
+
 
         x2= x + dx
         y2= y + dy
 
         magnitude= np.sqrt(dx**2 + dy**2)
 
-        #low threshold
+        #considering the points lower than point 3 to be stationary
         if magnitude>0.3:
 
             #color based on motion
             if magnitude < 1:
-                color= (255, 0, 0)
-            elif magnitude < 3:
-                color= (0, 255, 0)
+                color= (255, 0, 0) #blue- slow
+            elif magnitude < 3: 
+                color= (0, 255, 0) #green- mdeium
             else:
-                color= (0, 0, 255)
+                color= (0, 0, 255) #red- fast
 
             p1= (x, y)
             p2= (int(x + scale*dx), int(y + scale*dy))
