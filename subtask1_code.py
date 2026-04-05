@@ -61,14 +61,14 @@ while frame_count < max_frames: #runs for unpto 600 frames
 
         Ix = cv2.Sobel(patch1, cv2.CV_64F, 1, 0, ksize=3) #Sobel detects how brightness changes across the patch
         Iy = cv2.Sobel(patch1, cv2.CV_64F, 0, 1, ksize=3)
-        It = patch2 - patch1
+        It = patch2 - patch1 #how brigthness cahnged over time bwetween these two patches
 
-        A   = np.column_stack([Ix.flatten(), Iy.flatten()])
+        A   = np.column_stack([Ix.flatten(), Iy.flatten()]) #A collects knowon gradients for every patch, b collects known time changes 
         b   = -It.flatten()
-        ATA = A.T @ A
+        ATA = A.T @ A #least sqaures seup, multiple equations only two unknowns therefore find best
         ATb = A.T @ b
 
-        if abs(np.linalg.det(ATA)) < 1e-10:
+        if abs(np.linalg.det(ATA)) < 1e-10: #measures if matri is solvable
             continue
 
         flow   = np.linalg.solve(ATA, ATb) 
