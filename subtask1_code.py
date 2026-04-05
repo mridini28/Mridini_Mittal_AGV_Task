@@ -4,24 +4,24 @@ import numpy as np
 
 cap = cv2.VideoCapture('OPTICAL_FLOW.mp4')
 
-ret, frame1 = cap.read()
+ret, frame1 = cap.read() #reads the first frame, ret= true if sucesfil, frame 1 is the avtual img data
 if not ret:
     print("cant read video")
     exit()
 
-gray1= cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+gray1= cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY) #converts to grayscale, optical flow needs only brightenss not colour
 
-corners= cv2.goodFeaturesToTrack(gray1, 100, 0.01, 7)
-corners= corners.reshape(-1, 2)
+corners= cv2.goodFeaturesToTrack(gray1, 100, 0.01, 7) #10 good feutre points, dist of 7, 0.01 min quality
+corners= corners.reshape(-1, 2) #-1; how many ever rpws, 2: 2 columns, array with each row one point x,y
 
-fps= cap.get(cv2.CAP_PROP_FPS)
+fps= cap.get(cv2.CAP_PROP_FPS) #gets the videos frames per second
 if fps == 0 or np.isnan(fps):
-    fps= 30
+    fps= 30 #if cant get, take 30
 
-width= int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+width= int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) #get the input video dimensions
 height= int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-out= cv2.VideoWriter(
+out= cv2.VideoWriter( #output video with same dimentsions
     'foutput.mp4',
     cv2.VideoWriter_fourcc(*'mp4v'),
     int(fps),
